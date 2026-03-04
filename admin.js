@@ -16,13 +16,13 @@ let db;
 
 // ── Services (mirror of app.js) ──
 const SERVICES = [
-    { name: 'Uñas Acrílicas', duration: 90, emoji: '💅' },
-    { name: 'Pedicure', duration: 90, emoji: '🦶' },
-    { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️' },
-    { name: 'Tintes', duration: 120, emoji: '🎨' },
-    { name: 'Efectos de Color', duration: 300, emoji: '🌈' },
-    { name: 'Peinados', duration: 60, emoji: '💇‍♀️' },
-    { name: 'Maquillaje', duration: 90, emoji: '💄' }
+    { name: 'Uñas Acrílicas', duration: 90, emoji: '💅', price: '$400 – $700 MXN' },
+    { name: 'Pedicure', duration: 90, emoji: '🦶', price: '$500 MXN' },
+    { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️', price: '$250 – $500 MXN' },
+    { name: 'Tintes', duration: 120, emoji: '🎨', price: 'Desde $600 MXN' },
+    { name: 'Efectos de Color', duration: 300, emoji: '🌈', price: 'Desde $1,800 MXN' },
+    { name: 'Peinados', duration: 60, emoji: '💇‍♀️', price: 'Desde $400 MXN' },
+    { name: 'Maquillaje', duration: 90, emoji: '💄', price: 'Desde $900 MXN' }
 ];
 
 const DEFAULT_HOURS = {
@@ -491,7 +491,7 @@ function renderServicesTable() {
     table.innerHTML = SERVICES.map(s => `
         <div class="service-row">
             <span class="service-row-name">${s.emoji} ${s.name}</span>
-            <span class="service-row-duration">${formatDuration(s.duration)}</span>
+            <span class="service-row-duration">${formatDuration(s.duration)} · ${s.price}</span>
         </div>
     `).join('');
 }
