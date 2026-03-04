@@ -15,15 +15,20 @@ const firebaseConfig = {
 
 let db;
 
+// ── EmailJS Config ──
+const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // Set after EmailJS setup
+const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+
 // ── Services ──
 const SERVICES = [
-    { name: 'Uñas Acrílicas', duration: 90, emoji: '💅' },
-    { name: 'Pedicure', duration: 90, emoji: '🦶' },
-    { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️' },
-    { name: 'Tintes', duration: 120, emoji: '🎨' },
-    { name: 'Efectos de Color', duration: 300, emoji: '🌈' },
-    { name: 'Peinados', duration: 60, emoji: '💇‍♀️' },
-    { name: 'Maquillaje', duration: 90, emoji: '💄' }
+    { name: 'Uñas Acrílicas', duration: 90, emoji: '💅', price: '$400 – $700 MXN' },
+    { name: 'Pedicure', duration: 90, emoji: '🦶', price: '$500 MXN' },
+    { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️', price: '$250 – $500 MXN' },
+    { name: 'Tintes', duration: 120, emoji: '🎨', price: 'Desde $600 MXN' },
+    { name: 'Efectos de Color', duration: 300, emoji: '🌈', price: 'Desde $1,800 MXN' },
+    { name: 'Peinados', duration: 60, emoji: '💇‍♀️', price: 'Desde $400 MXN' },
+    { name: 'Maquillaje', duration: 90, emoji: '💄', price: 'Desde $900 MXN' }
 ];
 
 // ── Default Business Hours ──
@@ -137,7 +142,7 @@ function showServiceInfo(service) {
     const card = document.getElementById('serviceInfo');
     document.getElementById('serviceEmoji').textContent = service.emoji;
     document.getElementById('serviceName').textContent = service.name;
-    document.getElementById('serviceDuration').textContent = `Duración: ${formatDuration(service.duration)}`;
+    document.getElementById('serviceDuration').textContent = `Duración: ${formatDuration(service.duration)} · ${service.price}`;
     card.style.display = 'block';
 }
 
@@ -349,6 +354,11 @@ function renderConfirmation() {
         </div>
         <div class="confirm-divider"></div>
         <div class="confirm-row">
+            <span class="confirm-label">Precio</span>
+            <span class="confirm-value">${selectedService.price}</span>
+        </div>
+        <div class="confirm-divider"></div>
+        <div class="confirm-row">
             <span class="confirm-label">Fecha</span>
             <span class="confirm-value">${dayName} ${selectedDate.getDate()} de ${MONTH_NAMES[selectedDate.getMonth()]}, ${selectedDate.getFullYear()}</span>
         </div>
@@ -381,6 +391,7 @@ async function confirmBooking() {
             service: selectedService.name,
             serviceEmoji: selectedService.emoji,
             duration: selectedService.duration,
+            price: selectedService.price,
             date: formatDateStr(selectedDate),
             time: minutesToTime(selectedTime),
             clientName: document.getElementById('clientName').value.trim(),
@@ -389,6 +400,9 @@ async function confirmBooking() {
         };
 
         await db.collection('salon_appointments').add(appointment);
+
+        // Send email notification
+        sendEmailNotification(appointment);
 
         // Show success screen
         showSuccess(appointment);
@@ -482,4 +496,34 @@ function minutesToTime(minutes) {
     const period = h >= 12 ? 'PM' : 'AM';
     const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
     return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+}
+
+// ── Email Notification ──
+function sendEmailNotification(appt) {
+    if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+        console.log('EmailJS not configured, skipping email notification');
+        return;
+    }
+
+    try {
+        const d = new Date(appt.date + 'T00:00:00');
+        const dayName = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][d.getDay()];
+        const monthName = MONTH_NAMES[d.getMonth()];
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            service: `${appt.serviceEmoji} ${appt.service}`,
+            price: appt.price || 'N/A',
+            date: `${dayName} ${d.getDate()} de ${monthName}, ${d.getFullYear()}`,
+            time: appt.time,
+            client_name: appt.clientName,
+            client_phone: appt.clientPhone,
+            duration: formatDuration(appt.duration),
+            to_email: 'carjmen_69@hotmail.com'
+        }, EMAILJS_PUBLIC_KEY).then(
+            () => console.log('✅ Email notification sent'),
+            (err) => console.error('❌ Email error:', err)
+        );
+    } catch (e) {
+        console.error('Email notification error:', e);
+    }
 }
