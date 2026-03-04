@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Carmen Burruel Salón ✨</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Login Gate -->
+    <div class="glass-container" id="loginGate">
+        <div class="header">
+            <h1>Carmen Burruel Salón ✨</h1>
+            <p class="subtitle">Panel de Administración</p>
+        </div>
+        <div class="login-form">
+            <div class="control-group">
+                <label class="control-label" for="adminPassword">Contraseña de acceso</label>
+                <input type="password" id="adminPassword" class="input-text" placeholder="Ingresa tu contraseña"
+                    autocomplete="current-password">
+            </div>
+            <p class="login-error" id="loginError" style="display:none;">❌ Contraseña incorrecta</p>
+            <button class="btn-primary" id="btnLogin">Entrar 🔐</button>
+            <p class="login-hint" id="loginHint"></p>
+        </div>
+    </div>
+
+    <!-- Admin Panel (hidden until login) -->
+    <div class="glass-container admin-panel" id="adminPanel" style="display:none;">
+        <div class="header">
+            <h1>Carmen Burruel Salón ✨</h1>
+            <p class="subtitle">Panel de Administración</p>
+            <div class="header-badges">
+                <div class="badge">
+                    <span class="badge-icon">🟢</span>
+                    <span id="syncStatus">Conectado a Firebase</span>
+                </div>
+                <a href="index.html" class="badge badge-link">
+                    <span class="badge-icon">🌐</span>
+                    <span>Ver página pública</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="calendar" id="tabCalendar">📅 Calendario</button>
+            <button class="tab-btn" data-tab="appointments" id="tabAppointments">📋 Citas</button>
+            <button class="tab-btn" data-tab="settings" id="tabSettings">⚙️ Ajustes</button>
+        </div>
+
+        <!-- TAB: Calendar Management -->
+        <div class="tab-panel active" id="panelCalendar">
+            <div class="section-title">Gestión de Disponibilidad</div>
+            <p class="section-desc">Haz clic en un día para bloquearlo o desbloquearlo. Los días bloqueados no estarán
+                disponibles para citas.</p>
+
+            <div class="calendar-nav">
+                <button class="cal-nav-btn" id="adminPrevMonth">‹</button>
+                <span class="cal-month-label" id="adminCalLabel"></span>
+                <button class="cal-nav-btn" id="adminNextMonth">›</button>
+            </div>
+
+            <div class="calendar-grid admin-calendar" id="adminCalGrid">
+                <div class="cal-header-cell">Lun</div>
+                <div class="cal-header-cell">Mar</div>
+                <div class="cal-header-cell">Mié</div>
+                <div class="cal-header-cell">Jue</div>
+                <div class="cal-header-cell">Vie</div>
+                <div class="cal-header-cell">Sáb</div>
+                <div class="cal-header-cell">Dom</div>
+            </div>
+
+            <!-- Day detail panel -->
+            <div class="day-detail" id="dayDetail" style="display:none;">
+                <div class="day-detail-header">
+                    <span class="day-detail-title" id="dayDetailTitle"></span>
+                    <button class="btn-close" id="closeDayDetail">✕</button>
+                </div>
+                <div class="day-detail-body" id="dayDetailBody"></div>
+            </div>
+        </div>
+
+        <!-- TAB: Appointments List -->
+        <div class="tab-panel" id="panelAppointments">
+            <div class="section-title">Citas Agendadas</div>
+            <div class="appointments-filter">
+                <button class="filter-btn active" data-filter="upcoming" id="filterUpcoming">Próximas</button>
+                <button class="filter-btn" data-filter="past" id="filterPast">Pasadas</button>
+                <button class="filter-btn" data-filter="all" id="filterAll">Todas</button>
+            </div>
+            <div class="appointments-list" id="appointmentsList">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- TAB: Settings -->
+        <div class="tab-panel" id="panelSettings">
+            <div class="section-title">Configuración</div>
+
+            <div class="settings-section">
+                <div class="settings-label">Horarios predeterminados</div>
+                <div class="hours-table">
+                    <div class="hours-row">
+                        <span class="hours-day">Lunes - Viernes</span>
+                        <span class="hours-time">4:00 PM — 9:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Sábado</span>
+                        <span class="hours-time">9:00 AM — 9:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Domingo</span>
+                        <span class="hours-time closed">Cerrado</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-label">Cambiar contraseña</div>
+                <div class="control-group">
+                    <input type="password" id="newPassword" class="input-text" placeholder="Nueva contraseña">
+                </div>
+                <div class="control-group">
+                    <input type="password" id="confirmPassword" class="input-text" placeholder="Confirmar contraseña">
+                </div>
+                <button class="btn-primary btn-small" id="btnChangePassword">Cambiar Contraseña</button>
+                <p class="settings-note" id="passwordMsg"></p>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-label">Servicios disponibles</div>
+                <div class="services-table" id="servicesTable">
+                    <!-- Injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-credit">
+            <span>Developed by @yepzhi</span>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

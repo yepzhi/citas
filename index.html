@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carmen Burruel Salón ✨ — Agenda tu cita</title>
+    <meta name="description"
+        content="Agenda tu cita en Carmen Burruel Salón. Servicios de uñas, cabello, maquillaje y más en Hermosillo.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="glass-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Carmen Burruel Salón ✨</h1>
+            <p class="subtitle">Tu mejor versión comienza aquí</p>
+            <div class="header-badges">
+                <div class="badge">
+                    <span class="badge-icon">📍</span>
+                    <span>Hermosillo, Sonora</span>
+                </div>
+                <div class="badge">
+                    <span class="badge-icon">🕐</span>
+                    <span>Lun-Vie 4-9PM · Sáb 9AM-9PM</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Servicio</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">Fecha</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Hora</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="4">
+                <div class="step-circle">4</div>
+                <span class="step-label">Datos</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step" data-step="5">
+                <div class="step-circle">5</div>
+                <span class="step-label">Confirmar</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Service Selection -->
+        <div class="step-panel active" id="step1">
+            <div class="step-title">¿Qué servicio deseas? 💅</div>
+            <div class="control-group">
+                <label class="control-label" for="serviceSelect">Selecciona un servicio</label>
+                <select id="serviceSelect" class="input-select">
+                    <option value="" disabled selected>— Elige un servicio —</option>
+                    <option value="0">💅 Uñas Acrílicas — 1h 30min</option>
+                    <option value="1">🦶 Pedicure — 1h 30min</option>
+                    <option value="2">✂️ Corte de Cabello (Mujer) — 1h</option>
+                    <option value="3">🎨 Tintes — 2h</option>
+                    <option value="4">🌈 Efectos de Color — 5h</option>
+                    <option value="5">💇‍♀️ Peinados — 1h</option>
+                    <option value="6">💄 Maquillaje — 1h 30min</option>
+                </select>
+            </div>
+            <div class="service-info-card" id="serviceInfo" style="display:none;">
+                <div class="info-row">
+                    <span class="info-icon" id="serviceEmoji"></span>
+                    <div>
+                        <div class="info-title" id="serviceName"></div>
+                        <div class="info-subtitle" id="serviceDuration"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" id="btnNext1" disabled>Continuar →</button>
+        </div>
+
+        <!-- Step 2: Date Selection -->
+        <div class="step-panel" id="step2">
+            <div class="step-title">Elige la fecha 📅</div>
+            <div class="calendar-nav">
+                <button class="cal-nav-btn" id="prevMonth">‹</button>
+                <span class="cal-month-label" id="calMonthLabel"></span>
+                <button class="cal-nav-btn" id="nextMonth">›</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="cal-header-cell">Lun</div>
+                <div class="cal-header-cell">Mar</div>
+                <div class="cal-header-cell">Mié</div>
+                <div class="cal-header-cell">Jue</div>
+                <div class="cal-header-cell">Vie</div>
+                <div class="cal-header-cell">Sáb</div>
+                <div class="cal-header-cell">Dom</div>
+            </div>
+            <div class="step-buttons">
+                <button class="btn-secondary" id="btnBack2">← Atrás</button>
+                <button class="btn-primary" id="btnNext2" disabled>Continuar →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Time Selection -->
+        <div class="step-panel" id="step3">
+            <div class="step-title">Selecciona la hora ⏰</div>
+            <p class="step-subtitle" id="selectedDateLabel"></p>
+            <div class="time-slots-grid" id="timeSlotsGrid">
+                <!-- Time slots injected -->
+            </div>
+            <div class="step-buttons">
+                <button class="btn-secondary" id="btnBack3">← Atrás</button>
+                <button class="btn-primary" id="btnNext3" disabled>Continuar →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Client Info -->
+        <div class="step-panel" id="step4">
+            <div class="step-title">Tus datos 📝</div>
+            <div class="control-group">
+                <label class="control-label" for="clientName">Nombre completo</label>
+                <input type="text" id="clientName" class="input-text" placeholder="Ej. María García"
+                    autocomplete="name">
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="clientPhone">Teléfono / WhatsApp</label>
+                <input type="tel" id="clientPhone" class="input-text" placeholder="Ej. 662 123 4567" autocomplete="tel">
+            </div>
+            <div class="step-buttons">
+                <button class="btn-secondary" id="btnBack4">← Atrás</button>
+                <button class="btn-primary" id="btnNext4" disabled>Continuar →</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Confirmation -->
+        <div class="step-panel" id="step5">
+            <div class="step-title">Confirma tu cita ✅</div>
+            <div class="confirmation-card" id="confirmationCard">
+                <!-- Filled by JS -->
+            </div>
+            <div class="step-buttons">
+                <button class="btn-secondary" id="btnBack5">← Atrás</button>
+                <button class="btn-confirm" id="btnConfirm">Confirmar Cita ✨</button>
+            </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="step-panel" id="stepSuccess" style="display:none;">
+            <div class="success-container">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">¡Cita Agendada!</div>
+                <p class="success-text">Tu cita ha sido registrada exitosamente. Te esperamos.</p>
+                <div class="confirmation-card" id="successCard">
+                    <!-- Filled by JS -->
+                </div>
+                <button class="btn-primary" id="btnNewBooking" style="margin-top:24px;">Agendar otra cita</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <a href="admin.html" class="admin-link">
+            <span class="admin-icon">🔐</span>
+            <span>Administración</span>
+        </a>
+        <div class="footer-credit">
+            <span>Developed by @yepzhi</span>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
