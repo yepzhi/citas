@@ -228,9 +228,14 @@ function renderCalendar() {
         const isSunday = dayOfWeek === 0;
         const isBlocked = blockedDays[dateStr] === true;
         const hasHours = getHoursForDate(date) !== null;
+        const isFull = hasHours && !isPast && !isSunday && !isBlocked && isDayFull(date);
 
-        if (isPast || isSunday || isBlocked || !hasHours) {
+        if (isPast || isSunday || isBlocked || !hasHours || isFull) {
             cell.classList.add('disabled');
+            if (isFull) {
+                cell.classList.add('full');
+                cell.title = 'Día completo';
+            }
         } else {
             cell.addEventListener('click', () => selectDate(date, cell));
         }
@@ -247,6 +252,30 @@ function renderCalendar() {
 
         grid.appendChild(cell);
     }
+}
+
+// Check if a day has no available slots for the shortest service (60min)
+function isDayFull(date) {
+    const hours = getHoursForDate(date);
+    if (!hours) return true;
+
+    const openMin = timeToMinutes(hours.open);
+    const closeMin = timeToMinutes(hours.close);
+    const minDuration = 60; // Shortest service is 1 hour
+    const dateStr = formatDateStr(date);
+    const dateAppts = appointments.filter(a => a.date === dateStr);
+
+    for (let t = openMin; t + minDuration <= closeMin; t += 30) {
+        const slotStart = t;
+        const slotEnd = t + minDuration;
+        const conflict = dateAppts.some(a => {
+            const aStart = timeToMinutes(a.time);
+            const aEnd = aStart + (a.duration || 60);
+            return slotStart < aEnd && slotEnd > aStart;
+        });
+        if (!conflict) return false; // Found at least one free slot
+    }
+    return true; // No free slots
 }
 
 function selectDate(date, cell) {
