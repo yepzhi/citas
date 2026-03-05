@@ -725,11 +725,36 @@ body::before {
     font-size: 1.1em;
 }
 
-.footer-credit {
-    color: #4b5563;
-    font-size: 9px;
-    font-family: monospace;
-    letter-spacing: 2px;
+.footer-credit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.3);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.footer-credit-link strong {
+    color: rgba(244, 114, 182, 0.6);
+    font-weight: 700;
+}
+
+.footer-credit-link:hover {
+    background: rgba(244, 114, 182, 0.08);
+    border-color: rgba(244, 114, 182, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 16px rgba(244, 114, 182, 0.1);
+}
+
+.footer-credit-link:hover strong {
+    color: #f472b6;
 }
 
 /* ── Mobile Responsive ── */
