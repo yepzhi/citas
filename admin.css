@@ -41,7 +41,31 @@
     font-size: 0.75em;
 }
 
-/* ── Admin Panel ── */
+/* ── Admin Panel Styles ── */
+
+/* Go to Booking button */
+.btn-goto-booking {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(236, 72, 153, 0.5);
+    background: rgba(236, 72, 153, 0.1);
+    color: #f9a8d4;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.btn-goto-booking:hover {
+    background: rgba(236, 72, 153, 0.25);
+    border-color: #ec4899;
+    color: white;
+    transform: translateY(-1px);
+}
+
 .admin-panel {
     max-width: 900px;
 }
