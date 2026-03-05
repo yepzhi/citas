@@ -497,6 +497,17 @@ function formatDateStr(date) {
 }
 
 function timeToMinutes(timeStr) {
+    // Handle "4:30 PM" format
+    const ampmMatch = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (ampmMatch) {
+        let h = parseInt(ampmMatch[1]);
+        const m = parseInt(ampmMatch[2]);
+        const period = ampmMatch[3].toUpperCase();
+        if (period === 'PM' && h !== 12) h += 12;
+        if (period === 'AM' && h === 12) h = 0;
+        return h * 60 + m;
+    }
+    // Handle "16:00" format
     const [h, m] = timeStr.split(':').map(Number);
     return h * 60 + m;
 }
