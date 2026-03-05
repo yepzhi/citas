@@ -686,6 +686,109 @@ body::before {
     margin-bottom: 20px;
 }
 
+/* ── Social Buttons (Header) ── */
+.social-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid;
+}
+
+.social-btn.whatsapp {
+    background: rgba(37, 211, 102, 0.1);
+    border-color: rgba(37, 211, 102, 0.3);
+    color: #25d366;
+}
+
+.social-btn.whatsapp:hover {
+    background: rgba(37, 211, 102, 0.2);
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.2);
+    transform: translateY(-1px);
+}
+
+.social-btn.instagram {
+    background: rgba(228, 64, 95, 0.1);
+    border-color: rgba(228, 64, 95, 0.3);
+    color: #e4405f;
+}
+
+.social-btn.instagram:hover {
+    background: rgba(228, 64, 95, 0.2);
+    box-shadow: 0 0 20px rgba(228, 64, 95, 0.2);
+    transform: translateY(-1px);
+}
+
+/* ── Radio Button (Footer) ── */
+.radio-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 22px;
+    border-radius: 9999px;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    color: rgba(196, 181, 253, 0.9);
+    text-decoration: none;
+    font-size: 0.78em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.radio-btn:hover {
+    background: rgba(139, 92, 246, 0.18);
+    border-color: rgba(139, 92, 246, 0.4);
+    color: #c4b5fd;
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.15);
+    transform: translateY(-1px);
+}
+
+.radio-btn strong {
+    color: #a78bfa;
+    font-weight: 700;
+}
+
+.radio-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #a78bfa;
+    animation: pulse-radio 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-radio {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.5);
+    }
+
+    50% {
+        opacity: 0.6;
+        box-shadow: 0 0 0 6px rgba(167, 139, 250, 0);
+    }
+}
+
+.radio-icon {
+    font-size: 1.2em;
+}
+
 /* ── Footer ── */
 .footer {
     text-align: center;
