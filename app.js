@@ -271,9 +271,16 @@ function isDayFull(date) {
 
     const openMin = timeToMinutes(hours.open);
     const closeMin = timeToMinutes(hours.close);
+
+    // If times couldn't be parsed, don't mark as full
+    if (isNaN(openMin) || isNaN(closeMin) || closeMin <= openMin) return false;
+
     const minDuration = 60; // Shortest service is 1 hour
     const dateStr = formatDateStr(date);
     const dateAppts = appointments.filter(a => a.date === dateStr);
+
+    // No appointments = definitely not full
+    if (dateAppts.length === 0) return false;
 
     for (let t = openMin; t + minDuration <= closeMin; t += 30) {
         const slotStart = t;
