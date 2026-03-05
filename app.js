@@ -270,7 +270,7 @@ function isDayFull(date) {
         const slotEnd = t + minDuration;
         const conflict = dateAppts.some(a => {
             const aStart = timeToMinutes(a.time);
-            const aDuration = a.duration || (SERVICES.find(s => s.name === a.service) || {}).duration || 90;
+            const aDuration = a.duration || (SERVICES.find(s => s.name === a.service) || {}).duration || 60;
             const aEnd = aStart + aDuration;
             return slotStart < aEnd && slotEnd > aStart;
         });
@@ -324,7 +324,7 @@ function renderTimeSlots() {
         const conflict = dateAppts.some(a => {
             const aStart = timeToMinutes(a.time);
             // Lookup duration: from appointment, then from SERVICES array, fallback 90min
-            const aDuration = a.duration || (SERVICES.find(s => s.name === a.service) || {}).duration || 90;
+            const aDuration = a.duration || (SERVICES.find(s => s.name === a.service) || {}).duration || 60;
             const aEnd = aStart + aDuration;
             return slotStart < aEnd && slotEnd > aStart;
         });
