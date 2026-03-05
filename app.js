@@ -228,9 +228,19 @@ function renderCalendar() {
         const isSunday = dayOfWeek === 0;
         const isBlocked = blockedDays[dateStr] === true;
         const hasHours = getHoursForDate(date) !== null;
-        const isFull = hasHours && !isPast && !isSunday && !isBlocked && isDayFull(date);
 
-        if (isPast || isSunday || isBlocked || !hasHours || isFull) {
+        // Check if today is past closing time
+        const now = new Date();
+        let isTodayClosed = false;
+        if (date.getTime() === today.getTime() && hasHours) {
+            const closeMin = timeToMinutes(getHoursForDate(date).close);
+            const nowMin = now.getHours() * 60 + now.getMinutes();
+            isTodayClosed = nowMin >= closeMin;
+        }
+
+        const isFull = hasHours && !isPast && !isTodayClosed && !isSunday && !isBlocked && isDayFull(date);
+
+        if (isPast || isTodayClosed || isSunday || isBlocked || !hasHours || isFull) {
             cell.classList.add('disabled');
             if (isFull) {
                 cell.classList.add('full');
@@ -323,11 +333,18 @@ function renderTimeSlots() {
         // Check for conflicts with existing appointments
         const conflict = dateAppts.some(a => {
             const aStart = timeToMinutes(a.time);
-            // Lookup duration: from appointment, then from SERVICES array, fallback 90min
             const aDuration = a.duration || (SERVICES.find(s => s.name === a.service) || {}).duration || 60;
             const aEnd = aStart + aDuration;
             return slotStart < aEnd && slotEnd > aStart;
         });
+
+        // Skip past time slots for today
+        const now = new Date();
+        const isToday = selectedDate.toDateString() === now.toDateString();
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        if (isToday && slotStart < nowMin) {
+            continue;
+        }
 
         const btn = document.createElement('div');
         btn.className = 'time-slot';
