@@ -96,12 +96,12 @@ async function attemptLogin() {
         storedHash = doc.data().passwordHash;
     } else {
         // First time — set default password "salon2026"
-        const defaultHash = await hashPassword('salon2026');
+        const defaultHash = await hashPassword('1234');
         await db.collection('salon_settings').doc('admin').set({
             passwordHash: defaultHash
         }, { merge: true });
         storedHash = defaultHash;
-        document.getElementById('loginHint').textContent = 'Primera vez: usa "salon2026" como contraseña';
+        document.getElementById('loginHint').textContent = 'Primera vez: usa "1234" como contraseña';
     }
 
     if (hash === storedHash) {
