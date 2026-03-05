@@ -354,9 +354,10 @@ async function toggleBlockDay(dateStr, currentlyBlocked) {
             customHours: customHours
         }, { merge: true });
 
+        showToast(currentlyBlocked ? '✅ Día desbloqueado' : '🚫 Día bloqueado', 'success');
     } catch (error) {
         console.error('Error updating blocked days:', error);
-        alert('Error al actualizar. Intenta de nuevo.');
+        showToast('Error al actualizar. Intenta de nuevo.', 'error');
     }
 }
 
@@ -376,9 +377,10 @@ async function saveCustomHours(dateStr) {
             customHours: newCustom
         }, { merge: true });
 
+        showToast('⏰ Horario personalizado guardado', 'success');
     } catch (error) {
         console.error('Error saving custom hours:', error);
-        alert('Error al guardar horario personalizado.');
+        showToast('Error al guardar horario personalizado.', 'error');
     }
 }
 
@@ -392,8 +394,10 @@ async function resetCustomHours(dateStr) {
             customHours: newCustom
         }, { merge: true });
 
+        showToast('🔄 Horario restablecido', 'info');
     } catch (error) {
         console.error('Error resetting custom hours:', error);
+        showToast('Error al restablecer horario.', 'error');
     }
 }
 
@@ -445,9 +449,10 @@ async function cancelAppointment(id) {
 
     try {
         await db.collection('salon_appointments').doc(id).delete();
+        showToast('🗑️ Cita cancelada', 'success');
     } catch (error) {
         console.error('Error cancelling appointment:', error);
-        alert('Error al cancelar la cita.');
+        showToast('Error al cancelar la cita.', 'error');
     }
 }
 
@@ -528,4 +533,21 @@ function formatTime12(timeStr) {
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ── Toast Notification ──
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const icons = { success: '✅', error: '❌', info: '💡' };
+    toast.innerHTML = `<span class="toast-icon">${icons[type] || '💡'}</span>${message}`;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }

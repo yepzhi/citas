@@ -39,8 +39,15 @@ body::before {
 }
 
 @keyframes bg-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.55;
+    }
 }
 
 /* ── Glass Container ── */
@@ -190,8 +197,13 @@ body::before {
 }
 
 @keyframes line-fill {
-    from { width: 0; }
-    to { width: 100%; }
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
 }
 
 /* ── Step Panels ── */
@@ -211,6 +223,7 @@ body::before {
         opacity: 0;
         transform: translateY(16px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -508,9 +521,28 @@ body::before {
 }
 
 .cal-day.disabled {
-    opacity: 0.2;
+    opacity: 0.25;
     cursor: not-allowed;
+    pointer-events: none;
     color: rgba(255, 255, 255, 0.3);
+}
+
+.cal-day.full {
+    opacity: 0.4;
+    position: relative;
+    pointer-events: none;
+}
+
+.cal-day.full::after {
+    content: 'LLENO';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: #ec4899;
+    font-weight: 700;
 }
 
 .cal-day.today:not(.selected) {
@@ -623,9 +655,19 @@ body::before {
 }
 
 @keyframes bounce-in {
-    0% { transform: scale(0); opacity: 0; }
-    60% { transform: scale(1.2); }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .success-title {
@@ -756,7 +798,9 @@ body::before {
         flex-direction: column;
     }
 
-    .btn-primary, .btn-secondary, .btn-confirm {
+    .btn-primary,
+    .btn-secondary,
+    .btn-confirm {
         font-size: 0.95em;
         padding: 16px 20px;
     }
