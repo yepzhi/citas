@@ -137,8 +137,19 @@
             </div>
 
             <div class="settings-section">
-                <div class="settings-label">Servicios disponibles</div>
-                <div class="services-table" id="servicesTable">
+                <div class="settings-label" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Servicios disponibles</span>
+                    <div>
+                        <button class="btn-secondary btn-small" id="btnAddService" style="margin-right:8px;">+ Añadir
+                            Servicio</button>
+                        <button class="btn-primary btn-small" id="btnSaveServices">Guardar Cambios</button>
+                    </div>
+                </div>
+                <p class="section-desc" style="margin-bottom: 16px;">
+                    Edita los nombres, duraciones (en minutos) y precios de tus servicios. Los cambios solo afectarán a
+                    las citas nuevas; el historial se mantendrá intacto.
+                </p>
+                <div class="services-table" id="servicesTable" style="display:flex; flex-direction:column; gap:8px;">
                     <!-- Injected -->
                 </div>
             </div>

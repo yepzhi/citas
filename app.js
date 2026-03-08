@@ -21,7 +21,8 @@ const EMAILJS_SERVICE_ID = 'service_lh2vamp';
 const EMAILJS_TEMPLATE_ID = 'template_jin29zl';
 
 // ── Services ──
-const SERVICES = [
+let SERVICES = [];
+const DEFAULT_SERVICES = [
     { name: 'Uñas Acrílicas', duration: 90, emoji: '💅', price: '$400 – $700 MXN' },
     { name: 'Pedicure', duration: 90, emoji: '🦶', price: '$500 MXN' },
     { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️', price: '$250 – $500 MXN' },
@@ -80,6 +81,16 @@ function initFirebase() {
         }
     });
 
+    // Listen to services
+    db.collection('salon_settings').doc('services').onSnapshot(doc => {
+        if (doc.exists && doc.data().list) {
+            SERVICES = doc.data().list;
+        } else {
+            SERVICES = [...DEFAULT_SERVICES];
+        }
+        renderServicesDropdown();
+    });
+
     // Listen to appointments in real-time
     db.collection('salon_appointments').onSnapshot(snapshot => {
         appointments = [];
@@ -91,6 +102,32 @@ function initFirebase() {
             renderTimeSlots();
         }
     });
+}
+
+function renderServicesDropdown() {
+    const select = document.getElementById('serviceSelect');
+    // Keep the first disabled option
+    select.innerHTML = '<option value="" disabled selected>— Elige un servicio —</option>';
+
+    SERVICES.forEach((service, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        const durationStr = formatDuration(service.duration);
+        option.textContent = `${service.emoji} ${service.name} — ${durationStr} · ${service.price}`;
+        select.appendChild(option);
+    });
+
+    // Reset selection if it was already selected but no longer exists
+    if (selectedService) {
+        const foundIndex = SERVICES.findIndex(s => s.name === selectedService.name);
+        if (foundIndex !== -1) {
+            select.value = foundIndex;
+            selectedService = SERVICES[foundIndex];
+            showServiceInfo(selectedService);
+        } else {
+            resetBooking();
+        }
+    }
 }
 
 function bindEvents() {

@@ -14,8 +14,8 @@ const firebaseConfig = {
 
 let db;
 
-// ── Services (mirror of app.js) ──
-const SERVICES = [
+let SERVICES = [];
+const DEFAULT_SERVICES = [
     { name: 'Uñas Acrílicas', duration: 90, emoji: '💅', price: '$400 – $700 MXN' },
     { name: 'Pedicure', duration: 90, emoji: '🦶', price: '$500 MXN' },
     { name: 'Corte de Cabello (Mujer)', duration: 60, emoji: '✂️', price: '$250 – $500 MXN' },
@@ -145,6 +145,16 @@ function startDataListeners() {
         renderAppointments();
         renderAdminCalendar();
     });
+
+    // Services
+    db.collection('salon_settings').doc('services').onSnapshot(doc => {
+        if (doc.exists && doc.data().list) {
+            SERVICES = doc.data().list;
+        } else {
+            SERVICES = [...DEFAULT_SERVICES];
+        }
+        renderServicesTable();
+    });
 }
 
 // ── Admin Events ──
@@ -190,6 +200,13 @@ function bindAdminEvents() {
 
     // Change password
     document.getElementById('btnChangePassword').addEventListener('click', changePassword);
+
+    // Services
+    document.getElementById('btnSaveServices').addEventListener('click', saveServices);
+    document.getElementById('btnAddService').addEventListener('click', () => {
+        SERVICES.push({ name: '', duration: 60, emoji: '✨', price: '' });
+        renderServicesTable();
+    });
 }
 
 // ── Admin Calendar ──
@@ -493,12 +510,61 @@ async function changePassword() {
 // ── Services Table ──
 function renderServicesTable() {
     const table = document.getElementById('servicesTable');
-    table.innerHTML = SERVICES.map(s => `
-        <div class="service-row">
-            <span class="service-row-name">${s.emoji} ${s.name}</span>
-            <span class="service-row-duration">${formatDuration(s.duration)} · ${s.price}</span>
+    if (!SERVICES) return;
+
+    table.innerHTML = SERVICES.map((s, idx) => `
+        <div class="service-row" style="display:flex; gap:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; align-items:center;">
+            <input type="text" class="input-text service-emoji" value="${s.emoji}" data-idx="${idx}" placeholder="Emoji" style="width:50px; text-align:center;">
+            <input type="text" class="input-text service-name" value="${s.name}" data-idx="${idx}" placeholder="Nombre del servicio" style="flex:2;">
+            <input type="number" class="input-text service-duration" value="${s.duration}" data-idx="${idx}" placeholder="Minutos" style="width:80px;">
+            <input type="text" class="input-text service-price" value="${s.price}" data-idx="${idx}" placeholder="Precio (ej. $500)" style="flex:1;">
+            <button class="btn-cancel-appt btn-delete-service" onclick="deleteService(${idx})" style="margin:0; width:40px; height:40px; font-size:16px;" title="Eliminar servicio">🗑️</button>
         </div>
     `).join('');
+}
+
+function deleteService(idx) {
+    if (confirm('¿Eliminar este servicio? (Debes hacer clic en Guardar Cambios para que sea definitivo)')) {
+        SERVICES.splice(idx, 1);
+        renderServicesTable();
+    }
+}
+
+async function saveServices() {
+    const btn = document.getElementById('btnSaveServices');
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+        const emojis = document.querySelectorAll('.service-emoji');
+        const names = document.querySelectorAll('.service-name');
+        const durations = document.querySelectorAll('.service-duration');
+        const prices = document.querySelectorAll('.service-price');
+
+        const newList = [];
+        for (let i = 0; i < emojis.length; i++) {
+            if (names[i].value.trim()) {
+                newList.push({
+                    emoji: emojis[i].value.trim() || '✨',
+                    name: names[i].value.trim(),
+                    duration: parseInt(durations[i].value) || 60,
+                    price: prices[i].value.trim()
+                });
+            }
+        }
+
+        await db.collection('salon_settings').doc('services').set({
+            list: newList
+        }, { merge: true });
+
+        showToast('✅ Servicios guardados con éxito', 'success');
+    } catch (error) {
+        console.error('Error saving services:', error);
+        showToast('Error al guardar servicios', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+    }
 }
 
 // ── Helpers ──
