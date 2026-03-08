@@ -652,6 +652,10 @@
         flex-wrap: wrap;
     }
 
+    .service-header-row {
+        display: none !important;
+    }
+
     .service-row {
         flex-wrap: wrap;
     }
