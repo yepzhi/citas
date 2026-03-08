@@ -514,22 +514,36 @@ function renderServicesTable() {
 
     // Build header row
     const headerRow = `
-        <div class="service-header-row" style="display:flex; gap:10px; padding:0 10px 8px 10px; color:rgba(255,255,255,0.5); font-size:0.8em; font-weight:600;">
-            <span style="width:50px; text-align:center;">Emoji</span>
+        <div class="service-header-row hide-on-mobile" style="display:flex; gap:10px; padding:0 10px 8px 10px; color:rgba(255,255,255,0.5); font-size:0.85em; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+            <span style="width:60px; text-align:center;">Emoji</span>
             <span style="flex:2;">Nombre del Servicio</span>
-            <span style="width:110px;">Duración (min)</span>
+            <span style="width:110px;">Duración</span>
             <span style="flex:1;">Precio Visible</span>
             <span style="width:40px;"></span>
         </div>
     `;
 
     const rows = SERVICES.map((s, idx) => `
-        <div class="service-row" style="display:flex; gap:10px; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; align-items:center;">
-            <input type="text" class="input-text service-emoji" value="${s.emoji}" data-idx="${idx}" placeholder="Emoji" style="width:50px; text-align:center;">
-            <input type="text" class="input-text service-name" value="${s.name}" data-idx="${idx}" placeholder="Nombre del servicio" style="flex:2;">
-            <input type="number" class="input-text service-duration" value="${s.duration}" data-idx="${idx}" placeholder="Minutos" style="width:110px;">
-            <input type="text" class="input-text service-price" value="${s.price}" data-idx="${idx}" placeholder="Precio (ej. $500)" style="flex:1;">
-            <button class="btn-cancel-appt btn-delete-service" onclick="deleteService(${idx})" style="margin:0; width:40px; height:40px; font-size:16px;" title="Eliminar servicio">🗑️</button>
+        <div class="service-row new-service-row">
+            <div class="service-col" style="width:60px;">
+                <label class="mobile-label">Emoji</label>
+                <input type="text" class="input-text service-emoji" value="${s.emoji}" data-idx="${idx}" placeholder="✨" style="text-align:center;">
+            </div>
+            <div class="service-col" style="flex:2;">
+                <label class="mobile-label">Servicio</label>
+                <input type="text" class="input-text service-name" value="${s.name}" data-idx="${idx}" placeholder="Nombre del servicio">
+            </div>
+            <div class="service-col" style="width:110px;">
+                <label class="mobile-label">Duración (min)</label>
+                <input type="number" class="input-text service-duration" value="${s.duration}" data-idx="${idx}" placeholder="60">
+            </div>
+            <div class="service-col" style="flex:1;">
+                <label class="mobile-label">Precio Visible</label>
+                <input type="text" class="input-text service-price" value="${s.price}" data-idx="${idx}" placeholder="Ej. $500 MXN">
+            </div>
+            <div class="service-col" style="width:40px; justify-content:flex-end;">
+                <button class="btn-cancel-appt btn-delete-service" onclick="deleteService(${idx})" style="margin:0; width:40px; height:40px; font-size:16px; padding:0; display:flex; align-items:center; justify-content:center;" title="Eliminar servicio">🗑️</button>
+            </div>
         </div>
     `).join('');
 
