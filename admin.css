@@ -651,4 +651,21 @@
     .custom-hours-row {
         flex-wrap: wrap;
     }
+
+    .service-row {
+        flex-wrap: wrap;
+    }
+
+    .service-row .service-emoji {
+        width: 100% !important;
+    }
+
+    .service-row .service-name,
+    .service-row .service-price {
+        flex: 1 1 100% !important;
+    }
+
+    .service-row .btn-delete-service {
+        width: 100% !important;
+    }
 }
