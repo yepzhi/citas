@@ -621,7 +621,13 @@
     padding: 10px 14px;
     font-size: 0.95em;
     border-radius: 10px;
-    height: 100%;
+    flex: 1;
+    min-height: 44px;
+}
+
+.service-col .service-emoji {
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 .mobile-label {
