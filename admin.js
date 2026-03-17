@@ -359,19 +359,35 @@ function showDayDetail(date, dateStr) {
 // ── Block/Unblock Day ──
 async function toggleBlockDay(dateStr, currentlyBlocked) {
     try {
-        const newBlocked = { ...blockedDays };
-        if (currentlyBlocked) {
-            delete newBlocked[dateStr];
+        // Always read the LATEST state from Firestore to avoid race conditions
+        const doc = await db.collection('salon_settings').doc('availability').get();
+        const freshData = doc.exists ? doc.data() : {};
+        const freshBlocked = freshData.blockedDays || {};
+
+        if (currentlyBlocked || freshBlocked[dateStr] === true) {
+            // Force delete — if user says unblock, ALWAYS unblock
+            delete freshBlocked[dateStr];
         } else {
-            newBlocked[dateStr] = true;
+            freshBlocked[dateStr] = true;
         }
 
         await db.collection('salon_settings').doc('availability').set({
-            blockedDays: newBlocked,
-            customHours: customHours
+            blockedDays: freshBlocked,
+            customHours: freshData.customHours || customHours
         }, { merge: true });
 
+        // Update local state immediately
+        blockedDays = freshBlocked;
+
         showToast(currentlyBlocked ? '✅ Día desbloqueado' : '🚫 Día bloqueado', 'success');
+
+        // Re-render the day detail if it's still open
+        if (selectedDayStr === dateStr) {
+            const parts = dateStr.split('-');
+            const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            showDayDetail(date, dateStr);
+        }
+        renderAdminCalendar();
     } catch (error) {
         console.error('Error updating blocked days:', error);
         showToast('Error al actualizar. Intenta de nuevo.', 'error');
