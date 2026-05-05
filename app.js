@@ -53,6 +53,9 @@ let appointments = [];      // from Firestore
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
+    // Render default services immediately so dropdown is never empty
+    SERVICES = [...DEFAULT_SERVICES];
+    renderServicesDropdown();
     initFirebase();
     bindEvents();
     renderCalendar();
@@ -74,14 +77,13 @@ function initFirebase() {
         }
     });
 
-    // Listen to services
+    // Listen to services — overrides defaults if admin has custom ones
     db.collection('salon_settings').doc('services').onSnapshot(doc => {
         if (doc.exists && doc.data().list) {
             SERVICES = doc.data().list;
-        } else {
-            SERVICES = [...DEFAULT_SERVICES];
+            renderServicesDropdown();
         }
-        renderServicesDropdown();
+        // else: keep DEFAULT_SERVICES already rendered
     });
 
     // Listen to appointments in real-time
