@@ -73,6 +73,17 @@ function initFirebase() {
             const data = doc.data();
             blockedDays = data.blockedDays || {};
             customHours = data.customHours || {};
+            
+            // Check maintenance mode dynamically
+            const maintenanceOverlay = document.getElementById('maintenanceOverlay');
+            if (maintenanceOverlay) {
+                if (data.maintenanceMode === true) {
+                    maintenanceOverlay.style.display = 'flex';
+                } else {
+                    maintenanceOverlay.style.display = 'none';
+                }
+            }
+
             renderCalendar();
         }
     });

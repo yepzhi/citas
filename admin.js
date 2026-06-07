@@ -45,6 +45,7 @@ let calendarMonth = new Date().getMonth();
 let calendarYear = new Date().getFullYear();
 let currentFilter = 'upcoming';
 let selectedDayStr = null;
+let maintenanceMode = false;
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -126,6 +127,8 @@ function startDataListeners() {
             const data = doc.data();
             blockedDays = data.blockedDays || {};
             customHours = data.customHours || {};
+            maintenanceMode = data.maintenanceMode || false;
+            updateMaintenanceUI();
         }
         renderAdminCalendar();
     });
@@ -201,6 +204,26 @@ function bindAdminEvents() {
         SERVICES.push({ name: '', duration: 60, emoji: '✨', price: '' });
         renderServicesTable();
     });
+
+    // Maintenance Mode Toggle
+    const btnToggleMaintenance = document.getElementById('btnToggleMaintenance');
+    if (btnToggleMaintenance) {
+        btnToggleMaintenance.addEventListener('click', async () => {
+            try {
+                btnToggleMaintenance.disabled = true;
+                const newMode = !maintenanceMode;
+                await db.collection('salon_settings').doc('availability').set({
+                    maintenanceMode: newMode
+                }, { merge: true });
+                showToast(newMode ? '🚫 Mensaje de mantenimiento activado' : '✅ Mensaje de mantenimiento desactivado', 'success');
+            } catch (error) {
+                console.error('Error toggling maintenance mode:', error);
+                showToast('Error al cambiar modo de mantenimiento.', 'error');
+            } finally {
+                btnToggleMaintenance.disabled = false;
+            }
+        });
+    }
 }
 
 // ── Admin Calendar ──
@@ -654,4 +677,24 @@ function showToast(message, type = 'info') {
         toast.classList.add('removing');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+function updateMaintenanceUI() {
+    const btn = document.getElementById('btnToggleMaintenance');
+    const status = document.getElementById('maintenanceStatus');
+    if (!btn || !status) return;
+
+    if (maintenanceMode) {
+        btn.textContent = 'DEACTIVATE PAGE MESSAGE';
+        btn.style.background = '#ef4444';
+        btn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.3)';
+        status.textContent = 'Estado: Activo';
+        status.style.color = '#ef4444';
+    } else {
+        btn.textContent = 'ACTIVATE PAGE MESSAGE';
+        btn.style.background = 'linear-gradient(135deg, #ec4899, #be185d)';
+        btn.style.boxShadow = '0 4px 16px rgba(236, 72, 153, 0.3)';
+        status.textContent = 'Estado: Inactivo';
+        status.style.color = '#4ade80';
+    }
 }
