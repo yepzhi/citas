@@ -122,20 +122,15 @@
             </div>
 
             <div class="settings-section">
-                <div class="settings-label">Horarios predeterminados</div>
-                <div class="hours-table">
-                    <div class="hours-row">
-                        <span class="hours-day">Lunes - Viernes</span>
-                        <span class="hours-time">4:00 PM — 9:00 PM</span>
-                    </div>
-                    <div class="hours-row">
-                        <span class="hours-day">Sábado</span>
-                        <span class="hours-time">9:00 AM — 9:00 PM</span>
-                    </div>
-                    <div class="hours-row">
-                        <span class="hours-day">Domingo</span>
-                        <span class="hours-time closed">Cerrado</span>
-                    </div>
+                <div class="settings-label" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Horarios predeterminados</span>
+                    <button class="btn-primary btn-small" id="btnSaveDefaultHours" style="width:auto; padding:10px 20px;">Guardar Horarios</button>
+                </div>
+                <p class="section-desc" style="margin-bottom: 12px;">
+                    Define los días de la semana en los que el salón está abierto y sus horarios generales para recibir citas.
+                </p>
+                <div class="hours-table" id="defaultHoursTable">
+                    <!-- Injected by JS -->
                 </div>
             </div>
 
@@ -185,7 +180,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="admin.js?v=2.1"></script>
+    <script src="admin.js?v=2.3"></script>
 
     <!-- Particle System (CBSalon Theme) -->
     <canvas id="particleCanvas"></canvas>

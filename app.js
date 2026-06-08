@@ -36,6 +36,7 @@ const DEFAULT_HOURS = {
     6: { open: '09:00', close: '21:00' }, // Sábado
     0: null                                // Domingo - cerrado
 };
+let defaultHours = { ...DEFAULT_HOURS };
 
 const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -73,6 +74,17 @@ function initFirebase() {
             const data = doc.data();
             blockedDays = data.blockedDays || {};
             customHours = data.customHours || {};
+
+            // Parse defaultHours from Firestore if they exist
+            if (data.defaultHours) {
+                defaultHours = {};
+                for (let i = 0; i <= 6; i++) {
+                    defaultHours[i] = data.defaultHours[i] || null;
+                }
+            } else {
+                defaultHours = { ...DEFAULT_HOURS };
+            }
+            updateBusinessHoursLabel();
             
             // Check maintenance mode dynamically
             const maintenanceOverlay = document.getElementById('maintenanceOverlay');
@@ -585,7 +597,7 @@ function getHoursForDate(date) {
     if (customHours[dateStr]) return customHours[dateStr];
     // Default hours
     const dow = date.getDay();
-    return DEFAULT_HOURS[dow] || null;
+    return defaultHours[dow] || null;
 }
 
 function formatDateStr(date) {
@@ -654,4 +666,75 @@ function sendEmailNotification(appt) {
     } catch (e) {
         console.error('Email notification error:', e);
     }
+}
+
+function updateBusinessHoursLabel() {
+    const labelEl = document.getElementById('businessHoursLabel');
+    if (!labelEl) return;
+
+    const dayNamesShort = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const groups = [];
+    let currentGroup = null;
+
+    const getHoursString = (h) => {
+        if (!h) return 'Cerrado';
+        return `${formatTime12(h.open)}—${formatTime12(h.close)}`;
+    };
+
+    const formatTime12 = (timeStr) => {
+        const [h, m] = timeStr.split(':').map(Number);
+        const period = h >= 12 ? 'PM' : 'AM';
+        let h12 = h % 12;
+        if (h12 === 0) h12 = 12;
+        const mStr = m === 0 ? '' : `:${String(m).padStart(2, '0')}`;
+        return `${h12}${mStr}${period}`;
+    };
+
+    for (let i = 1; i <= 7; i++) {
+        const d = i % 7; // Start at Mon (1) to Sat (6), then Sun (0)
+        const h = defaultHours[d];
+        const hrsStr = getHoursString(h);
+
+        if (currentGroup && currentGroup.hours === hrsStr) {
+            currentGroup.end = d;
+        } else {
+            if (currentGroup) {
+                groups.push(currentGroup);
+            }
+            currentGroup = { start: d, end: d, hours: hrsStr };
+        }
+    }
+    if (currentGroup) {
+        groups.push(currentGroup);
+    }
+
+    const activeGroups = groups.filter(g => g.hours !== 'Cerrado');
+    if (activeGroups.length === 0) {
+        labelEl.textContent = 'Cerrado temporalmente';
+        return;
+    }
+
+    const parts = activeGroups.map(g => {
+        let daysStr = '';
+        if (g.start === g.end) {
+            daysStr = dayNamesShort[g.start];
+        } else {
+            const list = [];
+            let curr = g.start;
+            while (curr !== g.end) {
+                list.push(curr);
+                curr = (curr + 1) % 7;
+            }
+            list.push(g.end);
+
+            if (list.length === 2) {
+                daysStr = `${dayNamesShort[g.start]} y ${dayNamesShort[g.end]}`;
+            } else {
+                daysStr = `${dayNamesShort[g.start]}-${dayNamesShort[g.end]}`;
+            }
+        }
+        return `${daysStr} ${g.hours}`;
+    });
+
+    labelEl.textContent = parts.join(' · ');
 }

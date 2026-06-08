@@ -46,6 +46,7 @@ let calendarYear = new Date().getFullYear();
 let currentFilter = 'upcoming';
 let selectedDayStr = null;
 let maintenanceMode = false;
+let defaultHours = { ...DEFAULT_HOURS };
 
 // ── Init ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -129,6 +130,17 @@ function startDataListeners() {
             customHours = data.customHours || {};
             maintenanceMode = data.maintenanceMode || false;
             updateMaintenanceUI();
+
+            // Parse defaultHours from Firestore if they exist
+            if (data.defaultHours) {
+                defaultHours = {};
+                for (let i = 0; i <= 6; i++) {
+                    defaultHours[i] = data.defaultHours[i] || null;
+                }
+            } else {
+                defaultHours = { ...DEFAULT_HOURS };
+            }
+            renderDefaultHoursTable();
         }
         renderAdminCalendar();
     });
@@ -224,6 +236,12 @@ function bindAdminEvents() {
             }
         });
     }
+
+    // Save Default Hours
+    const btnSaveDefaultHours = document.getElementById('btnSaveDefaultHours');
+    if (btnSaveDefaultHours) {
+        btnSaveDefaultHours.addEventListener('click', saveDefaultHours);
+    }
 }
 
 // ── Admin Calendar ──
@@ -260,12 +278,13 @@ function renderAdminCalendar() {
         cell.className = 'cal-day';
         cell.textContent = d;
 
-        const isSunday = dayOfWeek === 0;
+        const isClosedGeneral = defaultHours[dayOfWeek] === null || defaultHours[dayOfWeek] === undefined;
         const isBlocked = blockedDays[dateStr] === true;
 
-        if (isSunday) {
-            cell.classList.add('disabled');
-        } else if (isBlocked) {
+        if (isClosedGeneral) {
+            cell.classList.add('closed-general');
+        }
+        if (isBlocked) {
             cell.classList.add('blocked');
         }
 
@@ -282,9 +301,7 @@ function renderAdminCalendar() {
             cell.appendChild(badge);
         }
 
-        if (!isSunday) {
-            cell.addEventListener('click', () => showDayDetail(date, dateStr));
-        }
+        cell.addEventListener('click', () => showDayDetail(date, dateStr));
 
         grid.appendChild(cell);
     }
@@ -633,7 +650,7 @@ function getHoursForDate(date) {
     const dateStr = formatDateStr(date);
     if (customHours[dateStr]) return customHours[dateStr];
     const dow = date.getDay();
-    return DEFAULT_HOURS[dow] || null;
+    return defaultHours[dow] || null;
 }
 
 function formatDateStr(date) {
@@ -696,5 +713,77 @@ function updateMaintenanceUI() {
         btn.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.3)';
         status.textContent = 'Estado: página activa';
         status.style.color = '#4ade80';
+    }
+}
+
+function renderDefaultHoursTable() {
+    const container = document.getElementById('defaultHoursTable');
+    if (!container) return;
+
+    const dayLabels = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    container.innerHTML = '';
+
+    for (let i = 0; i <= 6; i++) {
+        const h = defaultHours[i];
+        const isOpen = h !== null && h !== undefined;
+        const openVal = isOpen ? h.open : '09:00';
+        const closeVal = isOpen ? h.close : '18:00';
+
+        const row = document.createElement('div');
+        row.className = 'hours-row';
+        row.style.cssText = 'align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 16px; background: rgba(255, 255, 255, 0.02); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04);';
+
+        row.innerHTML = `
+            <span class="hours-day" style="flex: 1; min-width: 100px; font-weight: 700; color: #fff;">${dayLabels[i]}</span>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600; color: rgba(255,255,255,0.7);">
+                    <input type="checkbox" id="chkDay${i}" ${isOpen ? 'checked' : ''}> Abierto
+                </label>
+                <input type="time" id="openDay${i}" value="${openVal}" ${isOpen ? '' : 'disabled'}>
+                <span style="color: rgba(255,255,255,0.3)">—</span>
+                <input type="time" id="closeDay${i}" value="${closeVal}" ${isOpen ? '' : 'disabled'}>
+            </div>
+        `;
+
+        const chk = row.querySelector(`#chkDay${i}`);
+        const openInput = row.querySelector(`#openDay${i}`);
+        const closeInput = row.querySelector(`#closeDay${i}`);
+        chk.addEventListener('change', () => {
+            openInput.disabled = !chk.checked;
+            closeInput.disabled = !chk.checked;
+        });
+
+        container.appendChild(row);
+    }
+}
+
+async function saveDefaultHours() {
+    const btn = document.getElementById('btnSaveDefaultHours');
+    if (!btn) return;
+
+    try {
+        btn.disabled = true;
+        const newHours = {};
+        for (let i = 0; i <= 6; i++) {
+            const chk = document.getElementById(`chkDay${i}`);
+            if (chk && chk.checked) {
+                const openVal = document.getElementById(`openDay${i}`).value;
+                const closeVal = document.getElementById(`closeDay${i}`).value;
+                newHours[i] = { open: openVal, close: closeVal };
+            } else {
+                newHours[i] = null;
+            }
+        }
+
+        await db.collection('salon_settings').doc('availability').set({
+            defaultHours: newHours
+        }, { merge: true });
+
+        showToast('✅ Horarios predeterminados guardados', 'success');
+    } catch (error) {
+        console.error('Error saving default hours:', error);
+        showToast('❌ Error al guardar horarios', 'error');
+    } finally {
+        btn.disabled = false;
     }
 }

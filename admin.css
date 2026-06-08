@@ -575,6 +575,29 @@
     color: rgba(255, 255, 255, 0.3);
 }
 
+.hours-table input[type="time"] {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    font-family: inherit;
+    font-size: 0.9em;
+    outline: none;
+}
+.hours-table input[type="time"]:focus {
+    border-color: #f472b6;
+}
+.hours-table input[type="time"]:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.cal-day.closed-general {
+    color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+}
+
 .btn-small {
     padding: 14px 24px;
     font-size: 0.9em;
