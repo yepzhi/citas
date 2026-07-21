@@ -86,14 +86,10 @@ function initFirebase() {
             }
             updateBusinessHoursLabel();
             
-            // Check maintenance mode dynamically
+            // Maintenance mode active
             const maintenanceOverlay = document.getElementById('maintenanceOverlay');
             if (maintenanceOverlay) {
-                if (data.maintenanceMode === true) {
-                    maintenanceOverlay.style.display = 'flex';
-                } else {
-                    maintenanceOverlay.style.display = 'none';
-                }
+                maintenanceOverlay.style.display = 'flex';
             }
 
             renderCalendar();
